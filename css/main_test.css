@@ -165,10 +165,10 @@ a {
 	width: 100%;
 }
 
-#show-scene-0 #scroll-setion-0 .sticky-elem,
-#show-scene-1 #scroll-setion-1 .sticky-elem,
-#show-scene-2 #scroll-setion-2 .sticky-elem,
-#show-scene-3 #scroll-setion-3 .sticky-elem, {
+#show-scene-0 #scroll-section-0 .sticky-elem,
+#show-scene-1 #scroll-section-1 .sticky-elem,
+#show-scene-2 #scroll-section-2 .sticky-elem,
+#show-scene-3 #scroll-section-3 .sticky-elem {
 	display: block;
 }
 
