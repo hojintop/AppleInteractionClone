@@ -51,6 +51,18 @@
 			sceneInfo[i].scrollHeight = sceneInfo[i].heightNum * window.innerHeight;
 			sceneInfo[i].objs.container.style.height = `${sceneInfo[i].scrollHeight}px`;
 		}
+
+		yOffset = window.pageYOffset;
+		let totalScrollHeight = 0;
+		for(let i=0; i<sceneInfo.length;i++){
+			totalScrollHeight += sceneInfo[i].scrollHeight;
+			if(totalScrollHeight >= yOffset){
+				currentScene = i;
+				break;
+			}
+		}
+
+		document.body.setAttribute('id',`show-scene-${currentScene}`);
 	}
 
 	function scrollLoop(){
@@ -61,7 +73,7 @@
 
 		if(yOffset>prevScrollHeight+sceneInfo[currentScene].scrollHeight){
 			currentScene++;
-
+			document.body.setAttribute('id',`show-scene-${currentScene}`);
 		}
 
 		if(yOffset<prevScrollHeight){
@@ -69,17 +81,22 @@
 				return;
 			}
 			currentScene--;
+			document.body.setAttribute('id',`show-scene-${currentScene}`);
 		}
 
-		console.log(currentScene);
-
+		// 새로고침 될때 어차피 id 값으로 속석값이 들어감으로 주석후 위 스크롤되어 현재 씬이 변경될때만 적용되도록 한다.
+		// document.body.setAttribute('id',`show-scene-${currentScene}`);
 	}
 
-	window.addEventListener('resize', setLayout);
+	
 	window.addEventListener('scroll', () => {
 		yOffset = window.pageYOffset;
 		scrollLoop();
 	});
 
-	setLayout();
+	// window.addEventListener('DOMContentLoaded', setLayout);		// domcontentloaded 이미지제외 html script 등만 로드 되었을때 실행
+	window.addEventListener('load', setLayout);		// load의 경우 이미지 포함 모두 로드 되었을때 실행
+	window.addEventListener('resize', setLayout);
+	
+	
 })();
