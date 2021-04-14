@@ -24,6 +24,7 @@
 			values: {
 				videoImageCount: 300,
 				imageSequence: [0, 299],
+				canvas_opacity: [1, 0, { start: 0.9, end:1 }],
 				messageA_opacity_in: [0, 1, { start:0.1, end:0.2}],
 				messageA_translateY_in: [20, 0, { start:0.1, end:0.2}],
 				messageA_opacity_out: [1, 0, { start:0.25, end:0.3}],
@@ -144,8 +145,6 @@
 		//  현재 씬(스크롤섹션) 에서 스크롤된 범위를 비율로 구하기 0~1 사이
 		const scrollRatio = currentYOffset / scrollHeight;
 
-
-
 		if (values.length >= 3) {
 			//  start ~ end 사이에 애니메이션 실행
 			const partScrollStart = values[2].start * scrollHeight;
@@ -178,6 +177,7 @@
 			case 0:
 				let sequence = Math.round(calcValues(values.imageSequence, currentYOffset));
 				objs.context.drawImage(objs.videoImages[sequence],0,0);
+				objs.canvas.style.opacity = calcValues(values.canvas_opacity,currentYOffset);
 
 				if(scrollRatio <= 0.22){
 					//  in
@@ -301,7 +301,15 @@
 	});
 
 	// window.addEventListener('DOMContentLoaded', setLayout);		// domcontentloaded 이미지제외 html script 등만 로드 되었을때 실행
-	window.addEventListener('load', setLayout);		// load의 경우 이미지 포함 모두 로드 되었을때 실행
+	// load의 경우 이미지 포함 모두 로드 되었을때 실행
+	window.addEventListener('load', () => {
+		setLayout();
+
+		// 첫로드시 canvas 보일수 있도록 처리
+		sceneInfo[0].objs.context.drawImage(sceneInfo[0].objs.videoImages[0],0,0);
+
+	});
+
 	window.addEventListener('resize', setLayout);
 	
 	
