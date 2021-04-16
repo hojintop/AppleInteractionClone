@@ -9,7 +9,7 @@
 		{
 			//0
 			type: 'sticky',
-			heightNum: 5,		//	브라우저 높이의 5배로 scrollHeigth 세팅
+			heightNum: 5,		//	브라우저 높이의 5배로 scrollHeight 세팅
 			scrollHeight: 0,
 			objs: {
 				container: document.querySelector('#scroll-section-0'),
@@ -49,7 +49,7 @@
 		{
 			//1
 			type: 'nomal',
-			//heightNum: 5,		//	브라우저 높이의 5배로 scrollHeigth 세팅 - type normal에서는 필요 없음
+			//heightNum: 5,		//	브라우저 높이의 5배로 scrollHeight 세팅 - type normal에서는 필요 없음
 			scrollHeight: 0,
 			objs: {
 				container: document.querySelector('#scroll-section-1')
@@ -58,7 +58,7 @@
 		{
 			//2
 			type: 'sticky',
-			heightNum: 5,		//	브라우저 높이의 5배로 scrollHeigth 세팅
+			heightNum: 5,		//	브라우저 높이의 5배로 scrollHeight 세팅
 			scrollHeight: 0,
 			objs: {
 				container: document.querySelector('#scroll-section-2'),
@@ -97,7 +97,7 @@
 		{
 			//3
 			type: 'sticky',
-			heightNum: 5,		//	브라우저 높이의 5배로 scrollHeigth 세팅
+			heightNum: 5,		//	브라우저 높이의 5배로 scrollHeight 세팅
 			scrollHeight: 0,
 			objs: {
 				container: document.querySelector('#scroll-section-3'),
@@ -109,7 +109,8 @@
 			},
 			values: {
 				rect1X: [0, 0, { start: 0, end: 0}],
-				rect2X: [0, 0, { start: 0, end: 0}]
+				rect2X: [0, 0, { start: 0, end: 0}],
+				rectStartY: 0
 			}
 		}
 	];
@@ -311,11 +312,26 @@
 				}
 
 				objs.canvas.style.transform = `scale(${canvasScaleRatio})`;
+				objs.context.fillStyle = 'white';
 				objs.context.drawImage(objs.images[0],0,0);
 
 				// 캔버스 사이즈에 맞춰 가정한 innerWidth와 innerHeight
-				const recalculatedInnerWidth = window.innerWidth / canvasScaleRatio;
+				// window.innerWidth는 스크롤바포함 영역 이어서 스크롤바를뺀 width 값을 적용(body width)
+				const recalculatedInnerWidth = document.body.offsetWidth / canvasScaleRatio;
 				const recalculatedInnerHeight = window.innerHeight / canvasScaleRatio;
+
+				// canvas top 현재 scene에서 처음의 위치를 가져와 이후는 변경되지 않게 하기 위함
+				if(!values.rectStartY){
+					// 스크롤속도에 따라 오차가 생긴다 (getBoundingClientRect().top) 그러므로 다른방법인 offsetTop 이용
+					// values.rectStartY = objs.canvas.getBoundingClientRect().top;
+					values.rectStartY = objs.canvas.offsetTop + (objs.canvas.height - objs.canvas.height * canvasScaleRatio) / 2;
+
+					// rect1&2 그려질 타이밍
+					values.rect1X[2].start = (window.innerHeight / 2) / scrollHeight;
+					values.rect2X[2].start = (window.innerHeight / 2) / scrollHeight;
+					values.rect1X[2].end = values.rectStartY / scrollHeight;
+					values.rect2X[2].end = values.rectStartY / scrollHeight;
+				}
 
 				const whiteRectWidth = recalculatedInnerWidth * 0.15;
 				values.rect1X[0] = (objs.canvas.width - recalculatedInnerWidth) / 2;
@@ -323,10 +339,23 @@
 				values.rect2X[0] = values.rect1X[0] + recalculatedInnerWidth - whiteRectWidth;
 				values.rect2X[1] = values.rect2X[0] + whiteRectWidth;
 
-				// 좌우 흰색박스 그리기
-				objs.context.fillRect(values.rect1X[0], 0, parseInt(whiteRectWidth), objs.canvas.height);
-				objs.context.fillRect(values.rect2X[0], 0, parseInt(whiteRectWidth), objs.canvas.height);
+				// 좌우 흰색박스 그리기(영역 그리기만....)
+				// objs.context.fillRect(values.rect1X[0], 0, parseInt(whiteRectWidth), objs.canvas.height);
+				// objs.context.fillRect(values.rect2X[0], 0, parseInt(whiteRectWidth), objs.canvas.height);
 
+				// 좌우 흰색 박스 그리기
+				objs.context.fillRect(
+					parseInt(calcValues(values.rect1X, currentYOffset)),
+					0,
+					parseInt(whiteRectWidth),
+					objs.canvas.height
+				);
+				objs.context.fillRect(
+					parseInt(calcValues(values.rect2X, currentYOffset)),
+					0,
+					parseInt(whiteRectWidth),
+					objs.canvas.height
+				);
 				break;
 		}
 	}
