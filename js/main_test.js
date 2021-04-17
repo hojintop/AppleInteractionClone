@@ -301,6 +301,7 @@
 				if(scrollRatio > 0.9){
 					// 가로/세로 모두 꽉 차게 하기 위해 세팅(계산)
 					const objs = sceneInfo[3].objs;
+					const values = sceneInfo[3].values;
 					const widthRatio = window.innerWidth / objs.canvas.width;
 					const heightRatio = window.innerHeight / objs.canvas.height;
 					let canvasScaleRatio;
@@ -335,6 +336,8 @@
 
 				break;
 			case 3:
+				// 단계별 처리를 위한 변수 설정
+				let step = 0;
 				// 가로/세로 모두 꽉 차게 하기 위해 세팅(계산)
 				const widthRatio = window.innerWidth / objs.canvas.width;
 				const heightRatio = window.innerHeight / objs.canvas.height;
@@ -393,6 +396,17 @@
 					parseInt(whiteRectWidth),
 					objs.canvas.height
 				);
+
+				// 이미지 블렌드 처리를 위해 첫번째 canvas 영역이 스크롤 최상단에 닿앗는지여부로 체크
+				if(scrollRatio < values.rect1X[2].end){
+					step = 1;
+					objs.canvas.classList.remove('sticky');
+				}else{
+					step = 2;
+					// 이미지 블렌드 처리
+					objs.canvas.classList.add('sticky');
+					objs.canvas.style.top = `${-(objs.canvas.height - objs.canvas.height * canvasScaleRatio) / 2}px`;
+				}
 				break;
 		}
 	}
