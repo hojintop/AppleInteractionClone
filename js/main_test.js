@@ -523,37 +523,41 @@
 		}
 	}
 
-	window.addEventListener('scroll', () => {
-		yOffset = window.pageYOffset;
-		scrollLoop();
-		checkMenu();
-
-		if (!rafState) {
-			rafId = requestAnimationFrame(loop);
-			rafState = true;
-		}
-	});
-
 	// window.addEventListener('DOMContentLoaded', setLayout);		// domcontentloaded 이미지제외 html script 등만 로드 되었을때 실행
 	// load의 경우 이미지 포함 모두 로드 되었을때 실행
 	window.addEventListener('load', () => {
+		document.body.classList.remove('before-load');
 		setLayout();
 
 		// 첫로드시 canvas 보일수 있도록 처리
 		sceneInfo[0].objs.context.drawImage(sceneInfo[0].objs.videoImages[0],0,0);
 
-	});
+		window.addEventListener('scroll', () => {
+			yOffset = window.pageYOffset;
+			scrollLoop();
+			checkMenu();
 
-	window.addEventListener('resize', () => {
-		// 모바일 디바이스에서는 가로로 바뀔때만 적용되도록
-		if (window.innerWidth > 600){
-			setLayout();
-		}
-		sceneInfo[3].values.rectStartY = 0;
-	});
+			if (!rafState) {
+				rafId = requestAnimationFrame(loop);
+				rafState = true;
+			}
+		});
 
-	//	모바일 기기를 방향을 바꾸어 들었을때(아이폰?)
-	window.addEventListener('orientationchange', setLayout);
+		window.addEventListener('resize', () => {
+			// 모바일 디바이스에서는 가로로 바뀔때만 적용되도록
+			if (window.innerWidth > 600){
+				setLayout();
+			}
+			sceneInfo[3].values.rectStartY = 0;
+		});
+
+		//	모바일 기기를 방향을 바꾸어 들었을때(아이폰?)
+		window.addEventListener('orientationchange', setLayout);
+
+		document.querySelector('.loading').addEventListener('transitionend', (e) => {
+			document.body.removeChild(e.currentTarget);
+		});
+	});
 	
 	setCanvasImages();
 	
