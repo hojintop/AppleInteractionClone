@@ -110,6 +110,10 @@
 			values: {
 				rect1X: [0, 0, { start: 0, end: 0}],
 				rect2X: [0, 0, { start: 0, end: 0}],
+				blendHeight: [0, 0, { start: 0, end: 0}],
+				canvas_scale: [0, 0, { start: 0, end: 0}],
+				canvasCaption_opacity: [0, 1, { start: 0, end:0 }],
+				canvasCaption_translateY: [20, 0, { start: 0, end:0 }],
 				rectStartY: 0
 			}
 		}
@@ -137,6 +141,15 @@
 		}
 	}
 	setCanvasImages();
+
+	// 상단 메뉴 fixed 및 blur 처리를위한 class 추가 삭제처리
+	function checkMenu(){
+		if(yOffset >= document.querySelector('.global-nav').clientHeight){
+			document.body.classList.add('local-nav-sticky');
+		}else{
+			document.body.classList.remove('local-nav-sticky');
+		}
+	}
 
 	function setLayout(){
 		// 각 스크롤 섹션의 높이 세팅
@@ -404,8 +417,43 @@
 				}else{
 					step = 2;
 					// 이미지 블렌드 처리
+					values.blendHeight[0] = 0;
+					values.blendHeight[1] = objs.canvas.height;
+					values.blendHeight[2].start = values.rect1X[2].end;
+					values.blendHeight[2].end = values.blendHeight[2].start + 0.2;  // 블렌드 속도
+					const blendHeight = calcValues(values.blendHeight, currentYOffset);
+					
+					// 현재는 canvas 크기위 image 의 크기가 같기 때문에 아래의 objs canvas heigth 를 사용 크기가 다른 경우 image  의 네츄럴width 를 사용해야할수 있다.
+					objs.context.drawImage(objs.images[1], 0, objs.canvas.height - blendHeight, objs.canvas.width, blendHeight,
+														   0, objs.canvas.height - blendHeight, objs.canvas.width, blendHeight);
+
 					objs.canvas.classList.add('sticky');
 					objs.canvas.style.top = `${-(objs.canvas.height - objs.canvas.height * canvasScaleRatio) / 2}px`;
+
+					// 블렌드 처리 끝나고 canvas scale 축소를 위함
+					if(scrollRatio > values.rect1X[2].end){
+						values.canvas_scale[0] = canvasScaleRatio;
+						values.canvas_scale[1] = document.body.offsetWidth / (1.5 * objs.canvas.width);
+						values.canvas_scale[2].start = values.blendHeight[2].end;
+						values.canvas_scale[2].end = values.canvas_scale[2].start + 0.2;
+
+						objs.canvas.style.transform = `scale(${calcValues(values.canvas_scale, currentYOffset)})`;
+						objs.canvas.style.marginTop = 0;	// 다시 스크롤이 올라왔을때 margintop 0으로 다시 원상태로 복귀 
+					}
+
+					// 축소가 끝나면 sticky(position fixed) class 을 빼주어 정상 스크롤영역이 반영될수 있도록
+					if(scrollRatio > values.canvas_scale[2].end && values.canvas_scale[2].end > 0){
+						objs.canvas.classList.remove('sticky');
+						objs.canvas.style.marginTop = `${scrollHeight * 0.4}px`; // 블랜드 및 축소 되는속도(0.2)를 맞추어 계산해주어야 하기때문에 *0.4
+
+						// 최하단 텍스트 영역 애니메이션 처리
+						values.canvasCaption_opacity[2].start = values.canvas_scale[2].end;
+						values.canvasCaption_opacity[2].end = values.canvasCaption_opacity[2].start + 0.1;
+						values.canvasCaption_translateY[2].start = values.canvasCaption_opacity[2].start;
+						values.canvasCaption_translateY[2].end = values.canvasCaption_opacity[2].end;
+						objs.canvasCaption.style.opacity = calcValues(values.canvasCaption_opacity, currentYOffset);
+						objs.canvasCaption.style.tranform = `translate3d(0,${calcValues(values.canvasCaption_translateY, currentYOffset)}%,0)`;
+					}
 				}
 				break;
 		}
@@ -447,6 +495,7 @@
 	window.addEventListener('scroll', () => {
 		yOffset = window.pageYOffset;
 		scrollLoop();
+		checkMenu();
 	});
 
 	// window.addEventListener('DOMContentLoaded', setLayout);		// domcontentloaded 이미지제외 html script 등만 로드 되었을때 실행

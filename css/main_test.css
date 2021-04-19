@@ -42,6 +42,13 @@ a {
 	padding: 0 1rem;	
 }
 
+.local-nav-sticky .local-nav {
+	position: fixed;
+	top: 0;
+	background: rgba(255,255,255,0.1);
+	backdrop-filter: saturate(180%) blur(15px);
+}
+
 .global-nav-links,
 .local-nav-links {
 	display: flex;
@@ -161,7 +168,7 @@ a {
 
 .canvas-caption {
 	max-width: 1000px;
-	margin: 0 auto;
+	margin: -8em auto 0;
 	padding: 0 1rem;
 	font-size: 1.2rem;
 	color: #888;
@@ -222,6 +229,7 @@ a {
 	}
 
 	.description {
+		padding: 0;
 		font-size: 2rem;
 	}
 
@@ -252,10 +260,13 @@ a {
 	}
 
 	.mid-message {
+		width: 1000px;
+		padding: 0;
 		font-size: 4vw;
 	}
 
 	.canvas-caption {
+		padding: 0;
 		font-size: 2rem;
 	}
 }
