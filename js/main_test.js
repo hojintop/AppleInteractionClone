@@ -532,6 +532,21 @@
 		// 첫로드시 canvas 보일수 있도록 처리
 		sceneInfo[0].objs.context.drawImage(sceneInfo[0].objs.videoImages[0],0,0);
 
+		// 화면의 중간부분에서 새로고침 했을때 나타나는 비정상적인 동작 버그 수정 -> 스크롤 살짝 되게 처리 
+		let tempYOffset = yOffset;		//  현재 위치에서 작동 해야하기때문에
+		let tempScrollCount = 0;		// 횟수 제한을 위한 변수
+		if(tempYOffset > 0){
+			let siId = setInterval(()=>{				// 시간차 필요.
+				window.scrollTo(0, tempYOffset);
+				tempYOffset += 3;
+				tempScrollCount++;
+				
+				if(tempScrollCount > 10){
+					clearInterval(siId);
+				}
+			},20);
+		}
+
 		window.addEventListener('scroll', () => {
 			yOffset = window.pageYOffset;
 			scrollLoop();
