@@ -545,14 +545,16 @@
 
 		window.addEventListener('resize', () => {
 			// 모바일 디바이스에서는 가로로 바뀔때만 적용되도록
-			if (window.innerWidth > 600){
+			if (window.innerWidth > 900){
 				setLayout();
+				sceneInfo[3].values.rectStartY = 0;
 			}
-			sceneInfo[3].values.rectStartY = 0;
 		});
 
 		//	모바일 기기를 방향을 바꾸어 들었을때(아이폰?)
-		window.addEventListener('orientationchange', setLayout);
+		window.addEventListener('orientationchange', () =>{
+			setTimeout(setLayout, 500);
+		});
 
 		document.querySelector('.loading').addEventListener('transitionend', (e) => {
 			document.body.removeChild(e.currentTarget);

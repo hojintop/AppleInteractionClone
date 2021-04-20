@@ -25,6 +25,11 @@ body.before-load {
 	overflow: hidden;
 }
 
+.container {
+	/* 아이폰에서 가로 스크롤방지 */
+	overflow: hidden;
+}
+
 .global-nav {
 	position: absolute;
 	top: 0;
@@ -50,6 +55,8 @@ body.before-load {
 	position: fixed;
 	top: 0;
 	background: rgba(255,255,255,0.1);
+	/*ios 에서는 아직 -webkit- 를 붙여주어야한다.*/
+	-webkit-backdrop-filter: saturate(180%) blur(15px);
 	backdrop-filter: saturate(180%) blur(15px);
 }
 
@@ -172,7 +179,7 @@ body.before-load {
 
 .canvas-caption {
 	max-width: 1000px;
-	margin: -8em auto 0;
+	margin: -24rem auto 0;
 	padding: 0 1rem;
 	font-size: 1.2rem;
 	color: #888;
@@ -199,6 +206,7 @@ body.before-load {
 #show-scene-2 #scroll-section-2 .sticky-elem,
 #show-scene-3 #scroll-section-3 .sticky-elem {
 	display: block;
+	will-change: transform, opacity;
 }
 
 .sticky-elem-canvas {
@@ -321,6 +329,7 @@ body.before-load {
 	}
 
 	.canvas-caption {
+		margin-top: -8rem;
 		padding: 0;
 		font-size: 2rem;
 	}
