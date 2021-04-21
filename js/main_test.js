@@ -472,7 +472,10 @@
 
 		if(delayedYOffset > prevScrollHeight+sceneInfo[currentScene].scrollHeight){
 			enterNewScene = true;
-			currentScene++;
+			if(currentScene < sceneInfo.length-1){
+				currentScene++;	
+			}
+			
 			document.body.setAttribute('id',`show-scene-${currentScene}`);
 		}
 
@@ -561,14 +564,18 @@
 		window.addEventListener('resize', () => {
 			// 모바일 디바이스에서는 가로로 바뀔때만 적용되도록
 			if (window.innerWidth > 900){
-				setLayout();
-				sceneInfo[3].values.rectStartY = 0;
+				window.location.reload();
+				// setLayout();
+				// sceneInfo[3].values.rectStartY = 0;
 			}
 		});
 
 		//	모바일 기기를 방향을 바꾸어 들었을때(아이폰?)
 		window.addEventListener('orientationchange', () =>{
-			setTimeout(setLayout, 500);
+			scrollTo(0, 0);
+			setTimeout(()=>{
+				window.location.reload();
+			}, 500);
 		});
 
 		document.querySelector('.loading').addEventListener('transitionend', (e) => {
